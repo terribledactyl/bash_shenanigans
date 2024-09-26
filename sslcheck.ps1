@@ -21,10 +21,16 @@ foreach ($url in $urls) {
         $req = [Net.HttpWebRequest]::Create($url)
         $req.GetResponse() | Out-Null
 
+        # Get certificate details
+        $certStartDate = [DateTime]::Parse($req.ServicePoint.Certificate.GetEffectiveDateString())
+        $certEndDate = [DateTime]::Parse($req.ServicePoint.Certificate.GetExpirationDateString())
+        $daysUntilExpiration = ($certEndDate - (Get-Date)).Days
+
         $output = [PSCustomObject]@{
-            URL              = $url
-            'Cert Start Date' = $req.ServicePoint.Certificate.GetEffectiveDateString()
-            'Cert End Date'   = $req.ServicePoint.Certificate.GetExpirationDateString()
+            URL                  = $url
+            'Cert Start Date'    = $certStartDate
+            'Cert End Date'      = $certEndDate
+            'Days Until Expiry'  = $daysUntilExpiration
         }
 
         # Add the result to the output array
