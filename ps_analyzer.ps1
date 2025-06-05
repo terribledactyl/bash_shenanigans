@@ -18,20 +18,20 @@
 #>
 
 param (
-    [Parameter(Mandatory=$true)]
-    [string]$ScriptPath,  # Path to the target script to analyze
+    [Parameter(Mandatory = $true)]
+    [string]$ScriptPath,   # Path to the script you want to analyze
 
-    [Parameter(Mandatory=$true)]
-    [string[]]$Keywords   # Array of keywords to search for
+    [Parameter(Mandatory = $true)]
+    [string[]]$Keywords    # Keywords to search for
 )
 
-# Validate file exists
+# Check if the file exists
 if (-not (Test-Path $ScriptPath)) {
     Write-Error "File '$ScriptPath' not found."
     exit 1
 }
 
-# Read all lines from the script
+# Read all lines of the script into an array
 $lines = Get-Content -Path $ScriptPath
 
 # Loop through each keyword
@@ -39,16 +39,16 @@ foreach ($keyword in $Keywords) {
     Write-Host "`n=== Matches for keyword: '$keyword' ===" -ForegroundColor Cyan
     $matchFound = $false
 
-    # Loop through each line and check for keyword match
+    # Check each line for the current keyword
     for ($i = 0; $i -lt $lines.Count; $i++) {
         if ($lines[$i] -match [regex]::Escape($keyword)) {
-            $lineNumber = $i + 1  # Line numbers are 1-based
-            Write-Host "Line $lineNumber: $($lines[$i])" -ForegroundColor Yellow
+            $lineNumber = $i + 1  # Adjust for 1-based line numbers
+            Write-Host "Line ${lineNumber}: $($lines[$i])" -ForegroundColor Yellow
             $matchFound = $true
         }
     }
 
-    # Notify if no matches were found for this keyword
+    # If no matches were found for this keyword
     if (-not $matchFound) {
         Write-Host "No matches found for '$keyword'." -ForegroundColor DarkGray
     }
